@@ -1,0 +1,129 @@
+---
+# # Formato 1: HTML sin bibliografia formateada o da error !--
+title: |
+  ![](Logo_UCO.png){width=2in}  
+  "El chocolate"
+author: "MVAP, MVAP2, MVAP3"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+bibliography: ["zotero.bib", "libraries.bib"]
+link-citations: true
+---
+
+<!-- Antes de comenzar !!!
+debes crear el archivo con las referencias de R y los paquetes que vayas a utilizar.  
+Puedes actualizar el archivo en cualquier momento, sólo copia en la terminal el siguiente código y añade el nuevo paquete a la lista, se creará un nuevo archivo con las referencias en el formato adecuado "BibTeX". De forma automática incluye la referencia de R-->
+
+<!-- knitr::write_bib(c(.packages(), 'dplyr', 'ggplot2', 'knitr', 'tinytex'), 'libraries.bib') -->
+
+<!-- Inicio Rmd -->
+
+<!-- Configuración global de los bloques de código, `echo = TRUE` -> todo el código utilizado en este documento aparecerá en el documento final salvo que se expecifique lo contrario, a excepción de este bloque de código, `include=TRUE`  -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!-- Para generar títulos, subtítulos etc se usa # el número de # determina el estilo y el formato del texto -->
+## Intruducción
+
+### 1.1 El chocolate
+
+<!-- Trabajamos los diferentes estilos de text (negrita, cursiva, tachado, superíndice y subíndice), notas a pie de página [^N], citas > y referencias [@código] --> 
+<!-- En HTML podemos usar la etiqueda de css para usar diferentes colores en el texto:  -->
+<!-- <span style:"color:blue"PALABRA(S)</span> -->
+
+El <span style="color: red;">**chocolate**</span> (del náhuatl, *xocoatl*)[^1] [^2] es el alimento que se obtiene mezclando azúcar con dos producto<span style="color:blue;">**~s~**</span> que derivan de l<span style="color:green;">**^a^**</span> manipulación de las ~~semillas~~ del cacao: la masa del cacao y la manteca de cacao. A partir de esta combinación básica se elaboran los distintos tipos de chocolate que dependen de la proporción entre estos elementos y de su mezcla, o no, con otros productos ya sea como leche, colorante, y/o frutos secos [@kiss_modified_2024].
+
+[^1]: Hernández Triviño, Ascensión (2013-12). «Chocolate: historia de un nahuatlismo». Estudios de cultura náhuatl 46: 37-87. ISSN 0071-1675. Consultado el 7 de marzo de 2021.
+
+[^2]: Real Academia Española. «chocolate». Diccionario de la lengua española (23.ª edición).
+
+En 1896 El famoso gastrónomo francés J. A. Brillat-Savarin definió chocolate de la siguiente manera
+
+> "Se ha convenido en dar el nombre de chocolate a la mezcla compuesta de la semilla del árbol del cacao tostada, que lleva azúcar y canela; tal es la definición clásica del chocolate. El azúcar forma parte integrante, porque con cacao sólo resulta únicamente pasta de cacao y no chocolate."
+
+### 1.2 Los datos
+
+<!-- cargar las librerias que vamos a utilizar, queremos que el código se ejecute, pero no que aparezca en el documento final, también excluímos los avisos y mensajes -->
+
+```{r cargar-librerias, echo=FALSE, warning=FALSE, message=FALSE}
+library('dplyr')
+library('ggplot2')
+```
+
+<!-- Leer los datos desde el fichero que está en la misma carpeta que Rmarkdown. Si el fichero está en otra carpeta actualizar la localización del archivo -->
+
+```{r leer-datos, echo=FALSE}
+mydata <- read.csv("flavors_of_cacao.csv", row.names = NULL)
+```
+
+<!-- Trabajamos los links a páginas/archivos externos [](direcciónLink) y el código R en línea -->
+
+Los datos de este proyectos fueron descargados desde [kaggle](https://www.kaggle.com). Participaron `r length(unique(mydata$Company..Maker.if.known.))` compañias fabricantes de cocholate y se incluyeron chocolates de `r length(unique(mydata$Broad.Bean.Origin))` paises diferentes.
+
+<!-- insertar nueva página -->
+\newpage
+<!-- Primera vista de los datos -->
+
+```{r vista-datos, echo=FALSE}
+knitr::kable(head(mydata, 10), align = 'c', caption = "Tabla 1: Diez primeras filas")
+```
+
+Los datos tienen `r nrow(mydata)` entradas. Si los ordenamos por número de empresas:
+
+<!-- calcular el número de compañias por pais con la función `count` y guardar los datos ordenados de forma descendiente en variable nueva -->
+
+```{r pais-más-empresas, echo = FALSE}
+bypais <- mydata %>% 
+  count(Company.Location) %>% 
+  arrange(desc(n))
+```
+
+<!-- Utilizar la variable nueva para hacer un gráfico de barras incluyendo el pie de figura y la posición -->
+
+```{r grafico-empresa-pais, echo=FALSE, fig.cap="Fig 1. Paises top productores de barras de chocolate", fig.align='center'}
+ggplot(head(bypais)) +
+  geom_col(aes(y = Company.Location, x = n))+
+  xlab("Num. de compañias")+
+  ylab("Países")
+
+```
+
+### 1.3 Hipótesis
+
+Nuestra hipótesis ... 
+
+## Materiales y Methods
+
+<!-- Para indicar una referencia se utiliza [@codigo] -->
+
+Para llevar a cabo el análisis usamos R [@R-base] con las librerias dplyr [@R-dplyr] y ... Para la creación de este informe hemos utilizado el paquete ....
+
+## Resultados
+
+Los chocolates ... (Fig 2).
+
+```{r modelo, echo=FALSE, fig.cap="Fig 2. relación entre el ratio y el porcentaje de cacao", warning=FALSE, message=FALSE,}
+ggplot(mydata, aes(x = Rating, y = Rating, color = Cocoa.Percent)) + 
+    geom_point() + 
+    geom_jitter() +
+    geom_smooth(method = 'lm')
+
+```
+
+## Conclusiones
+
+Los datos ....  
+
+---
+<!-- Para asegurar la reproducibilidad de los resultados es necsario conocer el sistema operativo y la version de software y paquetes -->
+## Información de la sesión y referencias
+
+```{r sessionInfo, echo=FALSE}
+session <- sessionInfo()
+print(session)
+```
